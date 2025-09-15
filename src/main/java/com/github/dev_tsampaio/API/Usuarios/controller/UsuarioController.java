@@ -4,6 +4,7 @@ package com.github.dev_tsampaio.API.Usuarios.controller;
 import com.github.dev_tsampaio.API.Usuarios.entities.Usuario;
 import com.github.dev_tsampaio.API.Usuarios.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,17 @@ public class UsuarioController {
     @PostMapping
     public Usuario create(@RequestBody Usuario usuario) {
         return repository.save(usuario);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuarioAtualizado) {
+        return repository.findById(id).map(usuario -> {
+                    usuario.setName(usuarioAtualizado.getName());
+                    usuario.setEmail(usuarioAtualizado.getEmail());
+                    repository.save(usuario);
+                    return ResponseEntity.ok(usuario);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}")
